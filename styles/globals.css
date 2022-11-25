@@ -1,0 +1,55 @@
+/* basic tailwind classes */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* making custom classes which is used repeatedly over various tags and components */
+@layer components {
+  .button {
+    @apply w-full max-w-sm transform rounded-md border-none bg-primary-600 py-1 px-2 font-bold text-white outline-none transition duration-100 ease-out hover:underline active:scale-90 sm:max-w-[410px] sm:hover:shadow-2xl lg:px-5 lg:text-lg;
+  }
+
+  .input {
+    @apply w-full max-w-sm rounded-md border border-primary-600 bg-transparent p-2 text-primary-600 placeholder-primary-600 caret-primary-600 outline-none lg:p-2 lg:text-base;
+  }
+}
+
+@layer utilities {
+  .scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 10px;
+  }
+
+  .scrollbar::-webkit-scrollbar-track {
+    border-radius: 100vh;
+    background: #e5e7eb;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    background: #a3a3a3;
+    border-radius: 100vh;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #737373;
+  }
+
+  body::-webkit-scrollbar {
+    width: 6px;
+    height: 10px;
+  }
+
+  body::-webkit-scrollbar-track {
+    border-radius: 100vh;
+    background: #e5e7eb;
+  }
+
+  body::-webkit-scrollbar-thumb {
+    background: #a3a3a3;
+    border-radius: 100vh;
+  }
+
+  body::-webkit-scrollbar-thumb:hover {
+    background: #737373;
+  }
+}

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>JSDoc: Source: contactus.js</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="styles/prettify-tomorrow.css"
+    />
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css" />
+  </head>
+
+  <body>
+    <div id="main">
+      <h1 class="page-title">Source: contactus.js</h1>
+
+      <section>
+        <article>
+          <pre
+            class="prettyprint source linenums"
+          ><code>import Image from 'next/image'
+import React, { useState } from 'react'
+import contact from '../assets/contact.svg'
+import { useForm } from 'react-hook-form'
+import PhoneInput from 'react-phone-input-2'
+import axios from 'axios'
+import localAxios from '../components/axios'
+import 'react-phone-input-2/lib/style.css'
+import { LOCATION_API } from '../config'
+import Header from '../components/Header'
+import Footer from '../components/Footer'
+
+/**@file contactus.js contains the form for contacting us*/
+
+function contactus({ country }) {
+  //* this is used for form validation using react-hook-form
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    mode: 'onChange',
+    defaultValue: { name: '', email: '', phone: '', message: '' },
+  })
+
+  //* since phone input is not a normal input tag. we have used a third party library for it. so we have used a separate variable for it.
+  const [phoneNumber, setPhoneNumber] = useState('')
+  const [phoneNumberError, setPhoneNumberError] = useState(false)
+  const onSubmit = handleSubmit(async (formData) => {
+      //* if phone number is not there
+      if (!phoneNumber) {
+        setPhoneNumberError(true)
+        return
+      } else {
+        //* if everything is there make the api call
+        let temp = { ...formData, contact: phoneNumber }
+        await localAxios.post('/contact_us', temp)
+      }
+  })
+
+  return (
+    &lt;div className="h-screen bg-white">
+      &lt;Header />
+      &lt;div className="relative mx-auto mt-5 rounded-xl bg-primary-500 shadow-2xl sm:max-h-[600px] sm:max-w-[1080px]">
+        &lt;div className="invisible absolute bottom-0 h-96 w-80 rounded-tr-full bg-white pr-16 pt-16 lg:visible">
+          &lt;div className="relative h-72 w-72">
+            &lt;Image src={contact} layout="fill" objectFit="contain" />
+          &lt;/div>
+        &lt;/div>
+        &lt;div className="flex flex-col items-center justify-center pb-9 lg:ml-96">
+          &lt;h1 className="py-6 text-right text-4xl font-semibold text-white">
+            Get in Touch
+          &lt;/h1>
+          &lt;form
+            className="flex max-w-md flex-col rounded-lg bg-white p-8 shadow-xl"
+            type="submit"
+            onSubmit={onSubmit}
+          >
+            &lt;label className="mb-3 flex flex-col items-start justify-start sm:flex-row sm:items-center">
+              &lt;p className="text-md w-16 flex-shrink-0 whitespace-nowrap text-black lg:w-24 lg:text-xl">
+                Name
+              &lt;/p>
+              &lt;input
+                {...register('name', {
+                  required: 'Name is required',
+                })}
+                className="input mt-2 sm:my-0 sm:ml-5"
+                type="text"
+                placeholder="Your full name"
+                autoComplete="off"
+              />
+            &lt;/label>
+            &lt;p className="mb-3 text-xs text-red-500 md:text-sm">
+              {errors?.name?.message}
+            &lt;/p>
+            &lt;label className="mb-3 flex flex-col items-start justify-start sm:flex-row sm:items-center">
+              &lt;p className="text-md w-16 flex-shrink-0 whitespace-nowrap  text-black lg:w-24 lg:text-xl">
+                Email
+              &lt;/p>
+              &lt;input
+                {...register('email',{
+                  required: 'Email is required',
+                  pattern: {
+                    value: /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/,
+                    message: 'Invalid email',
+                  },
+                })}
+                className="input mt-2 sm:my-0 sm:ml-5"
+                type="email"
+                placeholder="Ex. james@bond.com"
+                autoComplete="off"
+              />
+            &lt;/label>
+            &lt;p className="mb-3 text-xs text-red-500 md:text-sm">
+              {errors?.email?.message}
+            &lt;/p>
+            &lt;label className="mb-3 flex flex-col items-start justify-start sm:flex-row sm:items-center">
+              &lt;p className="text-md w-16 flex-shrink-0 whitespace-nowrap  text-black lg:w-24 lg:text-xl">
+                Contact
+              &lt;/p>
+              &lt;PhoneInput
+                className="mt-2 sm:my-0 sm:ml-5"
+                country={country}
+                value={phoneNumber}
+                onChange={(phone) => {
+                  if (!phone || phone.length &lt; 4) {
+                    setPhoneNumberError(true)
+                  } else {
+                    setPhoneNumberError(false)
+                  }
+                  setPhoneNumber(phone)
+                }}
+                inputProps={{
+                  className: 'input sm:my-0 pl-12',
+                }}
+                buttonStyle={{ borderWidth: '1px', borderColor: '#4f46e5' }}
+              />
+            &lt;/label>
+            {phoneNumberError &amp;&amp; (
+              &lt;p className="mb-3 text-xs text-red-500 md:text-sm">
+                Invalid Contact
+              &lt;/p>
+            )}
+            &lt;label className="mb-3 flex flex-col items-start justify-start sm:flex-row sm:items-center">
+              &lt;p className="text-md w-16 flex-shrink-0 whitespace-nowrap text-black lg:w-24 lg:text-xl">
+                Message
+              &lt;/p>
+              &lt;textarea
+                {...register('message', { required: 'Message is required' })}
+                rows="3"
+                cols="24"
+                className="input mt-2 sm:my-0 sm:ml-5"
+                placeholder="Type your message here"
+                autoComplete="off"
+              >&lt;/textarea>
+            &lt;/label>
+            &lt;p className="mb-3 text-xs text-red-500 md:text-sm">
+              {errors?.message?.message}
+            &lt;/p>
+
+            &lt;button className={`button`} onClick={onSubmit}>
+              Submit
+            &lt;/button>
+          &lt;/form>
+        &lt;/div>
+      &lt;/div>
+      &lt;div className="fixed bottom-0 z-50 w-full bg-white">
+        &lt;Footer />
+      &lt;/div>
+    &lt;/div>
+  )
+}
+
+export default contactus
+
+// this is a server-side function to get the ip address of the user
+export async function getServerSideProps(context) {
+  let country = await axios.get(LOCATION_API)
+
+  return {
+    props: {
+      country: country.data.countrycode.toLowerCase(),
+    },
+  }
+}
+</code></pre>
+        </article>
+      </section>
+    </div>
+
+    <nav>
+      <h2><a href="index.html">Home</a></h2>
+    </nav>
+
+    <br class="clear" />
+
+    <footer>
+      Documentation generated by
+      <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Tue Nov 15
+      2022 10:54:53 GMT+0530 (India Standard Time)
+    </footer>
+
+    <script>
+      prettyPrint()
+    </script>
+    <script src="scripts/linenumber.js"></script>
+  </body>
+</html>
