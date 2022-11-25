@@ -12,6 +12,7 @@ function Header() {
     router.push('/contactus')
   }
   const moveToLogin = () => {
+    console.log(AUTH_VALUESTORY,'navigate to url')
     window.open(AUTH_VALUESTORY, '_self')
   }
   return (
